@@ -40,6 +40,17 @@ func TestEmpty(t *testing.T) {
 	}
 }
 
+func TestNilKey(t *testing.T) {
+	lm := New()
+	lm.Add(nil, "value")
+	if lm.Get(nil) != "value" {
+		t.Error("Get(nil) must work and return value")
+	}
+	if lm.last.Key() != nil {
+		t.Error("nil key must be stored and retrieved as nil")
+	}
+}
+
 func TestFirstLast(t *testing.T) {
 	lm := New()
 	lm.Add(1, "v")
@@ -52,15 +63,15 @@ func TestFirstLast(t *testing.T) {
 	}
 }
 
-func TestOneElementRefersToItself(t *testing.T) {
+func TestOneElementRefersToNil(t *testing.T) {
 	lm := New()
 	lm.Add(-4, true)
 	e := lm.last
 	if e.next != nil {
 		t.Error("e.next must not be defined for one element")
 	}
-	if e.prev != &lm.root {
-		t.Error("e.prev has to point to root for one element")
+	if e.prev != nil {
+		t.Error("e.prev must not be defined for one element")
 	}
 }
 
@@ -70,10 +81,6 @@ func TestPrevElement(t *testing.T) {
 	e := lm.last
 	if e.Prev() != nil {
 		t.Errorf("Prev must not be defined for single element, got %v", e.Prev())
-	}
-	// Internally prev is root
-	if e.prev != &lm.root {
-		t.Error("e.prev must be root for single element")
 	}
 }
 

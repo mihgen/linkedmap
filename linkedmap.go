@@ -21,18 +21,13 @@ type Element struct {
 }
 
 type LinkedMap struct {
-	Map  map[interface{}]interface{}
-	root Element
-	last *Element
+	Map   map[interface{}]interface{}
+	first *Element
+	last  *Element
 }
 
 func New() *LinkedMap {
-	lm := &LinkedMap{}
-	lm.Map = make(map[interface{}]interface{})
-	lm.root.next = &lm.root
-	lm.root.prev = &lm.root
-	lm.last = &lm.root
-	return lm
+	return &LinkedMap{Map: make(map[interface{}]interface{})}
 }
 
 func (lm *LinkedMap) Add(key interface{}, value interface{}) {
@@ -46,8 +41,12 @@ func (lm *LinkedMap) Add(key interface{}, value interface{}) {
 		return
 	}
 
-	// If we add new k,v pairs only
 	e := &Element{nil, nil, lm, key}
+	if lm.first == nil {
+		lm.first = e
+		lm.last = e
+		return
+	}
 
 	lm.last.next = e
 	e.prev = lm.last
@@ -71,22 +70,13 @@ func (e *Element) Next() *Element {
 }
 
 func (e *Element) Prev() *Element {
-	if e.prev != &e.list.root {
-		return e.prev
-	}
-	return nil
+	return e.prev
 }
 
 func (lm *LinkedMap) First() *Element {
-	if lm.root.next != &lm.root {
-		return lm.root.next
-	}
-	return nil
+	return lm.first
 }
 
 func (lm *LinkedMap) Last() *Element {
-	if lm.last != &lm.root {
-		return lm.last
-	}
-	return nil
+	return lm.last
 }
