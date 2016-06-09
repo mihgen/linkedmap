@@ -51,6 +51,27 @@ func TestNilKey(t *testing.T) {
 	}
 }
 
+func TestNilValue(t *testing.T) {
+	lm := New()
+	lm.Add("k", nil)
+	lm.Add("k2", nil)
+	lm.Add("k", 25)
+	if lm.Get("k2") != nil {
+		t.Error("nil value must be allowed")
+	}
+	if lm.Get("k") != 25 {
+		t.Error("nil value must be updatable")
+	}
+
+	n := 0
+	for i := lm.First(); i != nil; i, n = i.Next(), n+1 {
+	}
+
+	if n != 2 {
+		t.Errorf("We must have only 1 + 1(updated) elements here, got %d", n)
+	}
+}
+
 func TestFirstLast(t *testing.T) {
 	lm := New()
 	lm.Add(1, "v")
@@ -175,5 +196,21 @@ func TestOneMapUpdateAnother(t *testing.T) {
 
 	if lm1.Get(1) != "lm1" {
 		t.Error("Another linkedmap must not update the first map")
+	}
+}
+
+func TestLenght(t *testing.T) {
+	lm := New()
+	expected := 0
+	actual := lm.Len()
+	if expected != actual {
+		t.Errorf("Empty list len expected %d, got %d", expected, actual)
+	}
+
+	lm.Add(nil, nil)
+	expected = 1
+	actual = lm.Len()
+	if expected != actual {
+		t.Errorf("One pair k,v len expected %d, got %d", expected, actual)
 	}
 }

@@ -39,7 +39,5 @@ func main() {
 ```
 
 #### TODO:
-- tests
 - lazyinit, so that lm := new(linkedmap) works
 - delete k,v pair
-- check if we need to cover any other methods, available for map built-in

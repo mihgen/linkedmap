@@ -32,9 +32,10 @@ func New() *LinkedMap {
 
 func (lm *LinkedMap) Add(key interface{}, value interface{}) {
 	isUpdate := false
-	if lm.Map[key] != nil {
-		isUpdate = true // it's actually update, not new added value
-	}
+	_, ok := lm.Map[key]
+	if ok {
+		isUpdate = true
+	} // it's actually update, not new added value
 	lm.Map[key] = value
 
 	if isUpdate {
@@ -79,4 +80,8 @@ func (lm *LinkedMap) First() *Element {
 
 func (lm *LinkedMap) Last() *Element {
 	return lm.last
+}
+
+func (lm *LinkedMap) Len() int {
+	return len(lm.Map)
 }
