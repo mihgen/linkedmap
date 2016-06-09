@@ -78,9 +78,15 @@ func (e *Element) Prev() *Element {
 }
 
 func (lm *LinkedMap) First() *Element {
-	return lm.root.next
+	if lm.root.next != &lm.root {
+		return lm.root.next
+	}
+	return nil
 }
 
 func (lm *LinkedMap) Last() *Element {
-	return lm.last
+	if lm.last != &lm.root {
+		return lm.last
+	}
+	return nil
 }
