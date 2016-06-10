@@ -14,6 +14,11 @@
 
 package linkedmap
 
+type mapValue struct {
+	element *Element
+	value   interface{}
+}
+
 type Element struct {
 	next, prev *Element
 	list       *LinkedMap
@@ -21,28 +26,25 @@ type Element struct {
 }
 
 type LinkedMap struct {
-	Map   map[interface{}]interface{}
+	Map   map[interface{}]mapValue
 	first *Element
 	last  *Element
 }
 
 func New() *LinkedMap {
-	return &LinkedMap{Map: make(map[interface{}]interface{})}
+	return &LinkedMap{Map: make(map[interface{}]mapValue)}
 }
 
 func (lm *LinkedMap) Add(key interface{}, value interface{}) {
-	isUpdate := false
-	_, ok := lm.Map[key]
-	if ok {
-		isUpdate = true
-	} // it's actually update, not new added value
-	lm.Map[key] = value
-
-	if isUpdate {
+	current, ok := lm.Map[key]
+	if ok { // it's actually update, not new added value
+		lm.Map[key] = mapValue{element: current.element, value: value}
 		return
 	}
 
 	e := &Element{nil, nil, lm, key}
+	lm.Map[key] = mapValue{element: e, value: value}
+
 	if lm.first == nil {
 		lm.first = e
 		lm.last = e
@@ -55,7 +57,7 @@ func (lm *LinkedMap) Add(key interface{}, value interface{}) {
 }
 
 func (lm *LinkedMap) Get(key interface{}) interface{} {
-	return lm.Map[key]
+	return lm.Map[key].value
 }
 
 func (e *Element) Key() interface{} {
@@ -84,4 +86,22 @@ func (lm *LinkedMap) Last() *Element {
 
 func (lm *LinkedMap) Len() int {
 	return len(lm.Map)
+}
+
+func (lm *LinkedMap) Delete(key interface{}) {
+	mv, ok := lm.Map[key]
+	if !ok {
+		return
+	}
+	delete(lm.Map, key)
+	if mv.element.prev != nil {
+		mv.element.prev.next = mv.element.next
+	} else {
+		lm.first = mv.element.next
+	}
+	if mv.element.next != nil {
+		mv.element.next.prev = mv.element.prev
+	} else {
+		lm.last = mv.element.prev
+	}
 }

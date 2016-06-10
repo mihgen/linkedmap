@@ -40,4 +40,3 @@ func main() {
 
 #### TODO:
 - lazyinit, so that lm := new(linkedmap) works
-- delete k,v pair

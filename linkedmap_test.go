@@ -127,10 +127,6 @@ func TestElementValue(t *testing.T) {
 	if v != expected {
 		t.Errorf("Get(k) expected %v, got %v", expected, v)
 	}
-	v = lm.Map["k"]
-	if v != expected {
-		t.Errorf("Map[k] expected %v, got %v", expected, v)
-	}
 }
 
 func TestUpdateValue(t *testing.T) {
@@ -199,7 +195,7 @@ func TestOneMapUpdateAnother(t *testing.T) {
 	}
 }
 
-func TestLenght(t *testing.T) {
+func TestLength(t *testing.T) {
 	lm := New()
 	expected := 0
 	actual := lm.Len()
@@ -212,5 +208,75 @@ func TestLenght(t *testing.T) {
 	actual = lm.Len()
 	if expected != actual {
 		t.Errorf("One pair k,v len expected %d, got %d", expected, actual)
+	}
+}
+
+func TestDeleteNonExistent(t *testing.T) {
+	lm := New()
+	lm.Add(1, 1)
+	lm.Delete(2)
+	n := 0
+	for i := lm.First(); i != nil; i, n = i.Next(), n+1 {
+	}
+
+	if n != 1 || lm.Get(1) != 1 {
+		t.Error("Nothing must be removed for non-found key")
+	}
+}
+
+func TestDeleteFirst(t *testing.T) {
+	lm := New()
+	lm.Add(1, 1)
+	lm.Add(2, 2)
+	e2 := lm.Last()
+
+	lm.Delete(1)
+	if e2.prev != nil {
+		t.Error("e2.prev must refer to nil if first is deleted")
+	}
+	if lm.First().Key() != 2 {
+		t.Errorf("First() now must refer to second. Got first key %v", lm.First().Key())
+	}
+	_, ok := lm.Map[1]
+	if ok {
+		t.Error("First element was not removed from map")
+	}
+}
+
+func TestDeleteLast(t *testing.T) {
+	lm := New()
+	lm.Add(1, 1)
+	lm.Add(2, 2)
+	e1 := lm.First()
+
+	lm.Delete(2)
+	if e1.next != nil {
+		t.Error("e1.next must refer to nil if last is deleted")
+	}
+	if lm.Last().Key() != 1 {
+		t.Errorf("Last() now must refer to first. Got last key %v", lm.Last().Key())
+	}
+	_, ok := lm.Map[2]
+	if ok {
+		t.Error("Last element was not removed from map")
+	}
+}
+
+func TestDeleteMiddle(t *testing.T) {
+	lm := New()
+	lm.Add(1, 1)
+	lm.Add(2, 2)
+	lm.Add(3, 3)
+	lm.Delete(2)
+
+	if lm.First().Next().Key() != 3 || lm.First().Next().Value() != 3 {
+		t.Error("Next for first must be third element now")
+	}
+	if lm.Last().Prev().Key() != 1 || lm.Last().Prev().Value() != 1 {
+		t.Error("Prev for last must be first element now")
+	}
+	_, ok := lm.Map[2]
+	if ok {
+		t.Error("Element with key '2' was not removed from map")
 	}
 }
