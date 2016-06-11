@@ -60,6 +60,14 @@ func (lm *LinkedMap) Get(key interface{}) interface{} {
 	return lm.Map[key].value
 }
 
+func (lm *LinkedMap) GetWithOk(key interface{}) (interface{}, bool) {
+	r, ok := lm.Map[key]
+	if ok {
+		return r.value, ok
+	}
+	return nil, ok
+}
+
 func (e *Element) Key() interface{} {
 	return e.key
 }

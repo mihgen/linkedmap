@@ -15,16 +15,22 @@ import (
 func main() {
 	lm := linkedmap.New()
 
-	lm.Add("key1", "value1")
-	lm.Add("key2", "value2")
+	lm.Add(1, "value1")
+	lm.Add(false, "value2")
 	lm.Add("key3", "value3")
-	lm.Add("key2", "00updated00") // update doesn't change order
+	lm.Add(false, "00updated00") // update doesn't change order
 
 	// Show value of previously added k-v pair
 	fmt.Println("Value of prev added k-v pair: ", lm.Last().Prev().Value())
 
 	// Get value knowing a key
-	fmt.Println("Value for key1 is", lm.Get("key1"))
+	fmt.Println("Value for key1 is", lm.Get(1))
+
+	keys := []string{"key3", "no-key"}
+	for _, k := range keys {
+		v, ok := lm.GetWithOk(k) // returns false if key doesn't exist in a map
+		fmt.Println("v, ok =", v, ",", ok)
+	}
 
 	// List all stored (k,v) pairs
 	for e := lm.First(); e != nil; e = e.Next() {
@@ -34,9 +40,14 @@ func main() {
 	// Pairs before the first and after the last are nil
 	fmt.Println("Before the first -", lm.First().Prev())
 	fmt.Println("After the last -", lm.Last().Next())
-
 }
 ```
 
-#### TODO:
-- lazyinit, so that lm := new(linkedmap) works
+#### Specifying the size of map
+If it is required to specify allocation size for map, then new function can be added to linkedmap.go, and used instead of New():
+
+```go
+func NewAllocation(size int64) *LinkedMap {
+	return &LinkedMap{Map: make(map[interface{}]mapValue, size)}
+}
+```

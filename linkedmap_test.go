@@ -280,3 +280,29 @@ func TestDeleteMiddle(t *testing.T) {
 		t.Error("Element with key '2' was not removed from map")
 	}
 }
+
+func TestGetWithOkExist(t *testing.T) {
+	lm := New()
+	lm.Add(1, "v")
+	r, ok := lm.GetWithOk(1)
+	if r != "v" || !ok {
+		t.Error("GetWithOk must return value, true for existent")
+	}
+}
+
+func TestGetWithOkNil(t *testing.T) {
+	lm := New()
+	lm.Add(nil, nil)
+	r, ok := lm.GetWithOk(nil)
+	if r != nil || !ok {
+		t.Error("GetWithOk must be Ok if value is nil")
+	}
+}
+
+func TestGetWithOkNonExist(t *testing.T) {
+	lm := New()
+	r, ok := lm.GetWithOk(1)
+	if r != nil || ok {
+		t.Error("GetWithOk must return nil, false for non-existent")
+	}
+}
