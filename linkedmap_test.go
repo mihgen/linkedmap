@@ -30,6 +30,70 @@ func TestElementKeyUpdated(t *testing.T) {
 	}
 }
 
+func TestDeleteAllThenAdd(t *testing.T) {
+	lm := New()
+
+	// Add 3 elements
+	lm.Add("key1", "value1")
+	lm.Add("key2", "value2")
+	lm.Add("key3", "value3")
+
+	keys := []string{"key1", "key2", "key3"}
+
+	// Delete all elements
+	for _, key := range keys {
+		lm.Delete(key)
+	}
+
+	// Verify after deletion
+	if lm.First() != nil {
+		t.Error("First should be nil after deleting all elements")
+	}
+	if lm.Last() != nil {
+		t.Error("Last should be nil after deleting all elements")
+	}
+	if lm.Len() != 0 {
+		t.Errorf("Expected length 0 after deleting all elements, got %d", lm.Len())
+	}
+
+	// Add 2 new elements
+	newKey1 := "newKey1"
+	newValue1 := "newValue1"
+	newKey2 := "newKey2"
+	newValue2 := "newValue2"
+	lm.Add(newKey1, newValue1)
+	lm.Add(newKey2, newValue2)
+
+	// Verify after adding new elements
+	if lm.Len() != 2 {
+		t.Errorf("Expected length 2 after adding new elements, got %d", lm.Len())
+	}
+	if lm.First().Key() != newKey1 {
+		t.Errorf("Expected first key %v, got %v", newKey1, lm.First().Key())
+	}
+	if lm.Last().Key() != newKey2 {
+		t.Errorf("Expected last key %v, got %v", newKey2, lm.Last().Key())
+	}
+	if lm.Get(newKey1) != newValue1 {
+		t.Errorf("Expected Get(%v) to be %v, got %v", newKey1, newValue1, lm.Get(newKey1))
+	}
+	if lm.Get(newKey2) != newValue2 {
+		t.Errorf("Expected Get(%v) to be %v, got %v", newKey2, newValue2, lm.Get(newKey2))
+	}
+	if lm.First().Next().Key() != newKey2 {
+		t.Errorf("Expected first element's next to be %v, got %v", newKey2, lm.First().Next().Key())
+	}
+	if lm.Last().Prev().Key() != newKey1 {
+		t.Errorf("Expected last element's prev to be %v, got %v", newKey1, lm.Last().Prev().Key())
+	}
+	if lm.First().Prev() != nil {
+		t.Error("Expected first element's prev to be nil")
+	}
+	if lm.Last().Next() != nil {
+		t.Error("Expected last element's next to be nil")
+	}
+}
+
 func TestEmpty(t *testing.T) {
 	lm := New()
 	if lm.Last() != nil {
